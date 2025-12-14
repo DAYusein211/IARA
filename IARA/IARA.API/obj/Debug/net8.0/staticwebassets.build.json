@@ -1,0 +1,11 @@
+{
+  "Version": 1,
+  "Hash": "d6uDiDpHNgVxLsKliM75powfwU4Rx+pzFGJb69pduzI=",
+  "Source": "IARA.API",
+  "BasePath": "_content/IARA.API",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": []
+}

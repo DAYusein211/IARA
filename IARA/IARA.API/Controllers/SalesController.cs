@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using System;
 using System.Threading.Tasks;
 using IARA.Business.DTOs;
@@ -8,6 +9,7 @@ namespace IARA.API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class SalesController : ControllerBase
     {
         private readonly ISaleService _saleService;
@@ -56,10 +58,12 @@ namespace IARA.API.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Create([FromBody] CreateSaleDto createSaleDto)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
+
 
             try
             {

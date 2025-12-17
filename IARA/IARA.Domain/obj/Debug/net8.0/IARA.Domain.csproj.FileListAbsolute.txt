@@ -21,3 +21,4 @@ C:\Users\yusei\OneDrive\Документи\ddd\IARA\IARA\IARA.Domain\obj\Debug\n
 C:\Users\yusei\OneDrive\Документи\ddd\IARA\IARA\IARA.Domain\obj\Debug\net8.0\refint\IARA.Domain.dll
 C:\Users\yusei\OneDrive\Документи\ddd\IARA\IARA\IARA.Domain\obj\Debug\net8.0\IARA.Domain.pdb
 C:\Users\yusei\OneDrive\Документи\ddd\IARA\IARA\IARA.Domain\obj\Debug\net8.0\ref\IARA.Domain.dll
+C:\Users\yusei\OneDrive\Документи\ddd\IARA\IARA\IARA.Domain\obj\Debug\net8.0\IARA.Domain.csproj.AssemblyReference.cache

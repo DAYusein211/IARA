@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using System;
 using System.Threading.Tasks;
 using IARA.Business.DTOs;
@@ -8,6 +9,7 @@ namespace IARA.API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class CategoriesController : ControllerBase
     {
         private readonly ICategoryService _categoryService;
@@ -35,29 +37,46 @@ namespace IARA.API.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Create([FromBody] CreateCategoryDto createCategoryDto)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var category = await _categoryService.CreateCategoryAsync(createCategoryDto);
-            return CreatedAtAction(nameof(GetById), new { id = category.Id }, category);
+            try
+            {
+                var category = await _categoryService.CreateCategoryAsync(createCategoryDto);
+                return CreatedAtAction(nameof(GetById), new { id = category.Id }, category);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
 
         [HttpPut("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Update(Guid id, [FromBody] CreateCategoryDto updateCategoryDto)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var category = await _categoryService.UpdateCategoryAsync(id, updateCategoryDto);
-            if (category == null)
-                return NotFound();
+            try
+            {
+                var category = await _categoryService.UpdateCategoryAsync(id, updateCategoryDto);
+                if (category == null)
+                    return NotFound();
 
-            return Ok(category);
+                return Ok(category);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(Guid id)
         {
             await _categoryService.DeleteCategoryAsync(id);

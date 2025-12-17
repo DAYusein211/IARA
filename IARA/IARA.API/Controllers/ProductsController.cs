@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using System;
 using System.Threading.Tasks;
 using IARA.Business.DTOs;
@@ -8,6 +9,7 @@ namespace IARA.API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class ProductsController : ControllerBase
     {
         private readonly IProductService _productService;
@@ -42,40 +44,50 @@ namespace IARA.API.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Create([FromBody] CreateProductDto createProductDto)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var product = await _productService.CreateProductAsync(createProductDto);
-            return CreatedAtAction(nameof(GetById), new { id = product.Id }, product);
+            try
+            {
+                var product = await _productService.CreateProductAsync(createProductDto);
+                return CreatedAtAction(nameof(GetById), new { id = product.Id }, product);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
 
         [HttpPut("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Update(Guid id, [FromBody] CreateProductDto updateProductDto)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var product = await _productService.UpdateProductAsync(id, updateProductDto);
-            if (product == null)
-                return NotFound();
+            try
+            {
+                var product = await _productService.UpdateProductAsync(id, updateProductDto);
+                if (product == null)
+                    return NotFound();
 
-            return Ok(product);
+                return Ok(product);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(Guid id)
         {
             await _productService.DeleteProductAsync(id);
             return NoContent();
-        }
-
-        [HttpGet("{id}/check-stock/{quantity}")]
-        public async Task<IActionResult> CheckStock(Guid id, int quantity)
-        {
-            var available = await _productService.CheckStockAvailabilityAsync(id, quantity);
-            return Ok(new { available });
         }
     }
 }

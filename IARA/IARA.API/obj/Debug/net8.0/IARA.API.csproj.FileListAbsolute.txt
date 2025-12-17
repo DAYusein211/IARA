@@ -305,3 +305,10 @@ C:\Users\yusei\OneDrive\Документи\ddd\IARA\IARA\IARA.API\obj\Debug\net8
 C:\Users\yusei\OneDrive\Документи\ddd\IARA\IARA\IARA.API\obj\Debug\net8.0\IARA.API.pdb
 C:\Users\yusei\OneDrive\Документи\ddd\IARA\IARA\IARA.API\obj\Debug\net8.0\IARA.API.genruntimeconfig.cache
 C:\Users\yusei\OneDrive\Документи\ddd\IARA\IARA\IARA.API\obj\Debug\net8.0\ref\IARA.API.dll
+C:\Users\yusei\OneDrive\Документи\ddd\IARA\IARA\IARA.API\bin\Debug\net8.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
+C:\Users\yusei\OneDrive\Документи\ddd\IARA\IARA\IARA.API\bin\Debug\net8.0\Microsoft.AspNetCore.Cryptography.Internal.dll
+C:\Users\yusei\OneDrive\Документи\ddd\IARA\IARA\IARA.API\bin\Debug\net8.0\Microsoft.AspNetCore.Cryptography.KeyDerivation.dll
+C:\Users\yusei\OneDrive\Документи\ddd\IARA\IARA\IARA.API\bin\Debug\net8.0\Microsoft.AspNetCore.Identity.EntityFrameworkCore.dll
+C:\Users\yusei\OneDrive\Документи\ddd\IARA\IARA\IARA.API\bin\Debug\net8.0\Microsoft.Bcl.TimeProvider.dll
+C:\Users\yusei\OneDrive\Документи\ddd\IARA\IARA\IARA.API\bin\Debug\net8.0\Microsoft.Extensions.Identity.Core.dll
+C:\Users\yusei\OneDrive\Документи\ddd\IARA\IARA\IARA.API\bin\Debug\net8.0\Microsoft.Extensions.Identity.Stores.dll

@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using System;
 using System.Threading.Tasks;
 using IARA.Business.DTOs;
@@ -8,6 +9,7 @@ namespace IARA.API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class StoresController : ControllerBase
     {
         private readonly IStoreService _storeService;
@@ -35,29 +37,46 @@ namespace IARA.API.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Create([FromBody] CreateStoreDto createStoreDto)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var store = await _storeService.CreateStoreAsync(createStoreDto);
-            return CreatedAtAction(nameof(GetById), new { id = store.Id }, store);
+            try
+            {
+                var store = await _storeService.CreateStoreAsync(createStoreDto);
+                return CreatedAtAction(nameof(GetById), new { id = store.Id }, store);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
 
         [HttpPut("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Update(Guid id, [FromBody] CreateStoreDto updateStoreDto)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var store = await _storeService.UpdateStoreAsync(id, updateStoreDto);
-            if (store == null)
-                return NotFound();
+            try
+            {
+                var store = await _storeService.UpdateStoreAsync(id, updateStoreDto);
+                if (store == null)
+                    return NotFound();
 
-            return Ok(store);
+                return Ok(store);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(Guid id)
         {
             await _storeService.DeleteStoreAsync(id);

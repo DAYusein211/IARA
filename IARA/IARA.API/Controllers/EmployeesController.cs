@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using System;
 using System.Threading.Tasks;
 using IARA.Business.DTOs;
@@ -8,6 +9,7 @@ namespace IARA.API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class EmployeesController : ControllerBase
     {
         private readonly IEmployeeService _employeeService;
@@ -42,29 +44,46 @@ namespace IARA.API.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Create([FromBody] CreateEmployeeDto createEmployeeDto)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var employee = await _employeeService.CreateEmployeeAsync(createEmployeeDto);
-            return CreatedAtAction(nameof(GetById), new { id = employee.Id }, employee);
+            try
+            {
+                var employee = await _employeeService.CreateEmployeeAsync(createEmployeeDto);
+                return CreatedAtAction(nameof(GetById), new { id = employee.Id }, employee);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
 
         [HttpPut("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Update(Guid id, [FromBody] CreateEmployeeDto updateEmployeeDto)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var employee = await _employeeService.UpdateEmployeeAsync(id, updateEmployeeDto);
-            if (employee == null)
-                return NotFound();
+            try
+            {
+                var employee = await _employeeService.UpdateEmployeeAsync(id, updateEmployeeDto);
+                if (employee == null)
+                    return NotFound();
 
-            return Ok(employee);
+                return Ok(employee);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(Guid id)
         {
             await _employeeService.DeleteEmployeeAsync(id);

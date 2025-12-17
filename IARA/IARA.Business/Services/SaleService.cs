@@ -1,4 +1,4 @@
-﻿using System;
+﻿﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -92,6 +92,29 @@ namespace IARA.Business.Services
             
             try
             {
+                // Validate that store exists
+                var storeExists = await _context.Stores.AnyAsync(s => s.Id == createSaleDto.StoreId);
+                if (!storeExists)
+                    throw new Exception($"Store with ID {createSaleDto.StoreId} does not exist.");
+
+                // Validate that employee exists
+                var employeeExists = await _context.Employees.AnyAsync(e => e.Id == createSaleDto.EmployeeId);
+                if (!employeeExists)
+                    throw new Exception($"Employee with ID {createSaleDto.EmployeeId} does not exist.");
+
+                // Check for duplicate sale (same datetime, store, and employee within same minute)
+                var sameDateTimeStart = createSaleDto.SaleDateTime.AddSeconds(-createSaleDto.SaleDateTime.Second).AddMilliseconds(-createSaleDto.SaleDateTime.Millisecond);
+                var sameDateTimeEnd = sameDateTimeStart.AddSeconds(59).AddMilliseconds(999);
+
+                var duplicateSale = await _context.Sales.AnyAsync(s =>
+                    s.SaleDateTime >= sameDateTimeStart &&
+                    s.SaleDateTime <= sameDateTimeEnd &&
+                    s.StoreId == createSaleDto.StoreId &&
+                    s.EmployeeId == createSaleDto.EmployeeId);
+
+                if (duplicateSale)
+                    throw new Exception("A sale with this datetime, store, and employee combination already exists.");
+
                 var sale = new Sale
                 {
                     Id = Guid.NewGuid(),
@@ -108,10 +131,10 @@ namespace IARA.Business.Services
                 {
                     var product = await _context.Products.FindAsync(item.ProductId);
                     if (product == null)
-                        throw new Exception($"Product {item.ProductId} not found");
+                        throw new Exception($"Product with ID {item.ProductId} does not exist.");
 
                     if (product.AvailableQuantity < item.Quantity)
-                        throw new Exception($"Insufficient stock for product {product.Name}");
+                        throw new Exception($"Insufficient stock for product {product.Name}. Available: {product.AvailableQuantity}, Requested: {item.Quantity}");
 
                     var subtotal = product.SellingPrice * item.Quantity;
                     totalAmount += subtotal;
@@ -144,6 +167,7 @@ namespace IARA.Business.Services
                 throw;
             }
         }
+
 
         private SaleDto MapToDto(Sale sale)
         {

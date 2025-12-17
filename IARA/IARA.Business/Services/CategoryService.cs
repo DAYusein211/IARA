@@ -34,6 +34,13 @@ namespace IARA.Business.Services
 
         public async Task<CategoryDto> CreateCategoryAsync(CreateCategoryDto createCategoryDto)
         {
+            // Check for duplicate name
+            var existingCategory = await _context.Categories
+                .FirstOrDefaultAsync(c => c.Name == createCategoryDto.Name);
+            
+            if (existingCategory != null)
+                throw new Exception("A category with this name already exists.");
+
             var category = new Category
             {
                 Id = Guid.NewGuid(),
@@ -53,6 +60,13 @@ namespace IARA.Business.Services
             var category = await _context.Categories.FindAsync(id);
             if (category == null) return null;
 
+            // Check for duplicate name (excluding current category)
+            var existingCategory = await _context.Categories
+                .FirstOrDefaultAsync(c => c.Name == updateCategoryDto.Name && c.Id != id);
+            
+            if (existingCategory != null)
+                throw new Exception("A category with this name already exists.");
+
             category.Name = updateCategoryDto.Name;
             category.Description = updateCategoryDto.Description;
             category.UpdatedAt = DateTime.UtcNow;
@@ -69,6 +83,15 @@ namespace IARA.Business.Services
                 _context.Categories.Remove(category);
                 await _context.SaveChangesAsync();
             }
+        }
+
+        public async Task<bool> CategoryNameExistsAsync(string name, Guid? excludeId = null)
+        {
+            var query = _context.Categories.Where(c => c.Name == name);
+            if (excludeId.HasValue)
+                query = query.Where(c => c.Id != excludeId.Value);
+            
+            return await query.AnyAsync();
         }
 
         private CategoryDto MapToDto(Category category)

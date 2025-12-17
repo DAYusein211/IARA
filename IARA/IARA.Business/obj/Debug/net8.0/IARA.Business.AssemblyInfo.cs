@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("IARA.Business")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+78fe2a79d106c106e218fc0abe1361406c62b3ff")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+675bd3ec567546132a98b9ac3a4159471969a361")]
 [assembly: System.Reflection.AssemblyProductAttribute("IARA.Business")]
 [assembly: System.Reflection.AssemblyTitleAttribute("IARA.Business")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

@@ -1,4 +1,4 @@
-﻿using System;
+﻿﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -49,6 +49,20 @@ namespace IARA.Business.Services
 
         public async Task<EmployeeDto> CreateEmployeeAsync(CreateEmployeeDto createEmployeeDto)
         {
+            // Validate that the store exists
+            var storeExists = await _context.Stores.AnyAsync(s => s.Id == createEmployeeDto.StoreId);
+            if (!storeExists)
+                throw new Exception($"Store with ID {createEmployeeDto.StoreId} does not exist.");
+
+            // Check for duplicate employee name in the same store
+            var existingEmployee = await _context.Employees
+                .FirstOrDefaultAsync(e => e.FirstName == createEmployeeDto.FirstName && 
+                                         e.LastName == createEmployeeDto.LastName && 
+                                         e.StoreId == createEmployeeDto.StoreId);
+            
+            if (existingEmployee != null)
+                throw new Exception("An employee with this name already exists in this store.");
+
             var employee = new Employee
             {
                 Id = Guid.NewGuid(),
@@ -72,6 +86,21 @@ namespace IARA.Business.Services
             var employee = await _context.Employees.FindAsync(id);
             if (employee == null) return null;
 
+            // Validate that the store exists
+            var storeExists = await _context.Stores.AnyAsync(s => s.Id == updateEmployeeDto.StoreId);
+            if (!storeExists)
+                throw new Exception($"Store with ID {updateEmployeeDto.StoreId} does not exist.");
+
+            // Check for duplicate employee name in the same store (excluding current employee)
+            var existingEmployee = await _context.Employees
+                .FirstOrDefaultAsync(e => e.FirstName == updateEmployeeDto.FirstName && 
+                                         e.LastName == updateEmployeeDto.LastName && 
+                                         e.StoreId == updateEmployeeDto.StoreId && 
+                                         e.Id != id);
+            
+            if (existingEmployee != null)
+                throw new Exception("An employee with this name already exists in this store.");
+
             employee.FirstName = updateEmployeeDto.FirstName;
             employee.LastName = updateEmployeeDto.LastName;
             employee.Position = updateEmployeeDto.Position;
@@ -93,6 +122,7 @@ namespace IARA.Business.Services
                 await _context.SaveChangesAsync();
             }
         }
+
 
         private EmployeeDto MapToDto(Employee employee)
         {

@@ -1,4 +1,4 @@
-﻿using System;
+﻿﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -49,6 +49,18 @@ namespace IARA.Business.Services
 
         public async Task<ProductDto> CreateProductAsync(CreateProductDto createProductDto)
         {
+            // Validate that category exists
+            var categoryExists = await _context.Categories.AnyAsync(c => c.Id == createProductDto.CategoryId);
+            if (!categoryExists)
+                throw new Exception($"Category with ID {createProductDto.CategoryId} does not exist.");
+
+            // Check for duplicate code
+            var existingProduct = await _context.Products
+                .FirstOrDefaultAsync(p => p.Code == createProductDto.Code);
+            
+            if (existingProduct != null)
+                throw new Exception("A product with this code already exists.");
+
             var product = new Product
             {
                 Id = Guid.NewGuid(),
@@ -72,6 +84,18 @@ namespace IARA.Business.Services
         {
             var product = await _context.Products.FindAsync(id);
             if (product == null) return null;
+
+            // Validate that category exists
+            var categoryExists = await _context.Categories.AnyAsync(c => c.Id == updateProductDto.CategoryId);
+            if (!categoryExists)
+                throw new Exception($"Category with ID {updateProductDto.CategoryId} does not exist.");
+
+            // Check for duplicate code (excluding current product)
+            var existingProduct = await _context.Products
+                .FirstOrDefaultAsync(p => p.Code == updateProductDto.Code && p.Id != id);
+            
+            if (existingProduct != null)
+                throw new Exception("A product with this code already exists.");
 
             product.Code = updateProductDto.Code;
             product.Name = updateProductDto.Name;
@@ -101,6 +125,7 @@ namespace IARA.Business.Services
             var product = await _context.Products.FindAsync(productId);
             return product != null && product.AvailableQuantity >= quantity;
         }
+
 
         private ProductDto MapToDto(Product product)
         {

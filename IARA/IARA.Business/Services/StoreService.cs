@@ -1,4 +1,4 @@
-﻿using System;
+﻿﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -34,6 +34,13 @@ namespace IARA.Business.Services
 
         public async Task<StoreDto> CreateStoreAsync(CreateStoreDto createStoreDto)
         {
+            // Check for duplicate name
+            var existingStore = await _context.Stores
+                .FirstOrDefaultAsync(s => s.Name == createStoreDto.Name);
+            
+            if (existingStore != null)
+                throw new Exception("A store with this name already exists.");
+
             var store = new Store
             {
                 Id = Guid.NewGuid(),
@@ -58,6 +65,13 @@ namespace IARA.Business.Services
             var store = await _context.Stores.FindAsync(id);
             if (store == null) return null;
 
+            // Check for duplicate name (excluding current store)
+            var existingStore = await _context.Stores
+                .FirstOrDefaultAsync(s => s.Name == updateStoreDto.Name && s.Id != id);
+            
+            if (existingStore != null)
+                throw new Exception("A store with this name already exists.");
+
             store.Name = updateStoreDto.Name;
             store.Address = updateStoreDto.Address;
             store.Manager = updateStoreDto.Manager;
@@ -80,6 +94,7 @@ namespace IARA.Business.Services
                 await _context.SaveChangesAsync();
             }
         }
+
 
         private StoreDto MapToDto(Store store)
         {

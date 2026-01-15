@@ -7,22 +7,19 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.17"/>
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.22">
-          <PrivateAssets>all</PrivateAssets>
-          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-        </PackageReference>
-        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2"/>
-        <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.22" />
-        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.8" />
-        <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="8.0.22" />
-        <PackageReference Include="Microsoft.IdentityModel.JsonWebTokens" Version="8.0.22" />
+        <ProjectReference Include="..\IARA.Domain\IARA.Domain.csproj" />
+        <ProjectReference Include="..\IARA.Application\IARA.Application.csproj" />
+        <ProjectReference Include="..\IARA.Infrastructure\IARA.Infrastructure.csproj" />
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\IARA.Business\IARA.Business.csproj" />
-      <ProjectReference Include="..\IARA.Data\IARA.Data.csproj" />
-      <ProjectReference Include="..\IARA.Domain\IARA.Domain.csproj" />
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.0" />
+        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.0" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.0">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
     </ItemGroup>
 
 </Project>

@@ -172,7 +172,7 @@ public class FishingTripsController : ControllerBase
     /// Delete fishing trip (ADMIN only)
     /// </summary>
     [HttpDelete("{id}")]
-    [Authorize(Roles = "ADMIN")]
+    [Authorize(Roles = "ADMIN,PROFESSIONAL_FISHER")]
     public async Task<IActionResult> DeleteFishingTrip(int id)
     {
         try

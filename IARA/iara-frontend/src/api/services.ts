@@ -60,6 +60,10 @@ export const permitsAPI = {
 
 // Fishing Trips API
 export const fishingTripsAPI = {
+      delete: (id: number) =>
+        api.delete(`/fishingtrips/${id}`),
+    update: (id: number, data: Types.CreateFishingTripRequest) =>
+      api.put<Types.FishingTrip>(`/fishingtrips/${id}`, data),
   getAll: () => 
     api.get<Types.FishingTrip[]>('/fishingtrips'),
   
@@ -90,6 +94,8 @@ export const fishingTripsAPI = {
 
 // Tickets API
 export const ticketsAPI = {
+    delete: (id: number) =>
+      api.delete(`/tickets/${id}`),
   getAll: () => 
     api.get<Types.Ticket[]>('/tickets'),
   

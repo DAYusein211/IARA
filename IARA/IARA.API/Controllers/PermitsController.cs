@@ -61,7 +61,7 @@ public class PermitsController : ControllerBase
     }
 
     [HttpGet]
-    [Authorize(Roles = "ADMIN,INSPECTOR")]
+    [Authorize(Roles = "ADMIN,INSPECTOR,RECREATIONAL_FISHER")]
     public async Task<IActionResult> GetAllPermits()
     {
         try

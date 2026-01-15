@@ -20,6 +20,17 @@ public class FishingTripService : IFishingTripService
             throw new InvalidOperationException("StartTime must be before EndTime");
         }
 
+        // If EndTime is provided and is in the past, set it on creation
+        DateTime? endTimeToSet = null;
+        if (request.EndTime.HasValue)
+        {
+            // Only allow EndTime if it's after StartTime and not in the future
+            if (request.EndTime.Value > request.StartTime && request.EndTime.Value <= DateTime.UtcNow)
+            {
+                endTimeToSet = request.EndTime.Value;
+            }
+        }
+
         var ship = await _unitOfWork.Ships.GetByIdAsync(request.ShipId);
         if (ship == null)
         {
@@ -30,7 +41,7 @@ public class FishingTripService : IFishingTripService
         {
             ShipId = request.ShipId,
             StartTime = request.StartTime,
-            EndTime = request.EndTime,
+            EndTime = endTimeToSet, // Set from request if valid
             FuelUsed = request.FuelUsed,
             CreatedAt = DateTime.UtcNow
         };
@@ -102,12 +113,16 @@ public class FishingTripService : IFishingTripService
             throw new InvalidOperationException("Fishing trip not found");
         }
 
-        if (request.EndTime.HasValue && trip.StartTime >= request.EndTime.Value)
+        if (request.EndTime.HasValue && request.EndTime.Value <= trip.StartTime)
         {
             throw new InvalidOperationException("EndTime must be after StartTime");
         }
 
-        trip.EndTime = request.EndTime;
+        // Only update EndTime if provided, otherwise keep as is
+        if (request.EndTime != null)
+        {
+            trip.EndTime = request.EndTime;
+        }
         trip.FuelUsed = request.FuelUsed;
 
         var existingCatches = trip.Catches.ToList();

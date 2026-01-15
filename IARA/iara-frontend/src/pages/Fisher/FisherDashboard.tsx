@@ -2,16 +2,28 @@ import { useState, useEffect } from 'react';
 import { Navbar } from '../../components/Navbar';
 import { useAuth } from '../../context/AuthContext';
 import { Ship, Anchor, Fish, FileCheck } from 'lucide-react';
+import { Edit, Trash2 } from 'lucide-react';
 import { shipsAPI, fishingTripsAPI, permitsAPI } from '../../api/services';
 import { Ship as ShipType, FishingTrip, Permit } from '../../types';
 import { FishingTripForm } from './FishingTripForm';
 export function FisherDashboard() {
+    const handleDeleteTrip = async (id: number) => {
+      if (!window.confirm('Are you sure you want to delete this fishing trip?')) return;
+      try {
+        await fishingTripsAPI.delete(id);
+        await loadDashboardData();
+      } catch (error: any) {
+        alert(error.response?.data?.message || 'Failed to delete fishing trip');
+      }
+    };
   const { user } = useAuth();
   const [ships, setShips] = useState<ShipType[]>([]);
   const [activeTrips, setActiveTrips] = useState<FishingTrip[]>([]);
+  const [completedTrips, setCompletedTrips] = useState<FishingTrip[]>([]);
   const [permits, setPermits] = useState<Permit[]>([]);
   const [loading, setLoading] = useState(true);
   const [showTripForm, setShowTripForm] = useState(false);
+  const [editingTrip, setEditingTrip] = useState<FishingTrip | null>(null);
 
   useEffect(() => {
     loadDashboardData();
@@ -21,15 +33,16 @@ export function FisherDashboard() {
   const loadDashboardData = async () => {
     if (!user) return;
     try {
-      const [shipsRes, tripsRes] = await Promise.all([
+      const [shipsRes, activeRes, completedRes] = await Promise.all([
         shipsAPI.getByOwner(user.id),
         fishingTripsAPI.getActive(),
+        fishingTripsAPI.getCompleted(),
       ]);
       setShips(shipsRes.data);
-      // Filter active trips for user's ships
+      // Filter trips for user's ships
       const userShipIds = shipsRes.data.map(s => s.id);
-      const userActiveTrips = tripsRes.data.filter(t => userShipIds.includes(t.shipId));
-      setActiveTrips(userActiveTrips);
+      setActiveTrips(activeRes.data.filter(t => userShipIds.includes(t.shipId)));
+      setCompletedTrips(completedRes.data.filter(t => userShipIds.includes(t.shipId)));
       // Load permits for user's ships
       if (shipsRes.data.length > 0) {
         const permitPromises = shipsRes.data.map(ship => permitsAPI.getByShip(ship.id));
@@ -47,7 +60,7 @@ export function FisherDashboard() {
   const stats = {
     totalShips: ships.length,
     activeTrips: activeTrips.length,
-    totalCatch: activeTrips.reduce((sum, trip) => sum + trip.totalCatchKg, 0),
+    totalCatch: activeTrips.reduce((sum, trip) => sum + (trip.totalCatchKg || 0), 0),
     activePermits: permits.filter(p => p.isExpired === false).length,
   };
 
@@ -141,9 +154,11 @@ export function FisherDashboard() {
             </div>
             <FishingTripForm
               isOpen={showTripForm}
-              onClose={() => setShowTripForm(false)}
+              onClose={() => { setShowTripForm(false); setEditingTrip(null); }}
               onSuccess={loadDashboardData}
               ships={ships}
+              initialTrip={editingTrip}
+              isEdit={!!editingTrip}
             />
             {/* Active Trips */}
             {activeTrips.length > 0 && (
@@ -161,10 +176,72 @@ export function FisherDashboard() {
                             <p className="text-sm text-gray-600">Started: {new Date(trip.startTime).toLocaleString()}</p>
                             <p className="text-sm text-gray-600">Total Catch: {trip.totalCatchKg} kg</p>
                           </div>
-                          <div className="text-right">
+                          <div className="text-right flex flex-col items-end gap-2">
                             <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
                               In Progress
                             </span>
+                            <div className="flex gap-2 mt-2">
+                              <button
+                                className="text-blue-600 hover:text-blue-900"
+                                onClick={() => { setEditingTrip(trip); setShowTripForm(true); }}
+                                title="Edit Trip"
+                              >
+                                <Edit className="h-5 w-5 inline" />
+                              </button>
+                              <button
+                                className="text-red-600 hover:text-red-900"
+                                onClick={() => handleDeleteTrip(trip.id)}
+                                title="Delete Trip"
+                              >
+                                <Trash2 className="h-5 w-5 inline" />
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Completed Trips */}
+            {completedTrips.length > 0 && (
+              <div className="bg-white rounded-lg shadow mt-6">
+                <div className="p-6 border-b border-gray-200">
+                  <h2 className="text-xl font-semibold text-gray-900">Completed Fishing Trips</h2>
+                </div>
+                <div className="p-6">
+                  <div className="space-y-4">
+                    {completedTrips.map(trip => (
+                      <div key={trip.id} className="border border-gray-200 rounded-lg p-4">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <h3 className="font-semibold text-gray-900">{trip.shipName}</h3>
+                            <p className="text-sm text-gray-600">Started: {new Date(trip.startTime).toLocaleString()}</p>
+                            <p className="text-sm text-gray-600">Ended: {trip.endTime ? new Date(trip.endTime).toLocaleString() : 'N/A'}</p>
+                            <p className="text-sm text-gray-600">Total Catch: {trip.totalCatchKg} kg</p>
+                          </div>
+                          <div className="text-right flex flex-col items-end gap-2">
+                            <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-200 text-gray-800">
+                              Completed
+                            </span>
+                            <div className="flex gap-2 mt-2">
+                              <button
+                                className="text-blue-600 hover:text-blue-900"
+                                onClick={() => { setEditingTrip(trip); setShowTripForm(true); }}
+                                title="Edit Trip"
+                              >
+                                <Edit className="h-5 w-5 inline" />
+                              </button>
+                              <button
+                                className="text-red-600 hover:text-red-900"
+                                onClick={() => handleDeleteTrip(trip.id)}
+                                title="Delete Trip"
+                              >
+                                <Trash2 className="h-5 w-5 inline" />
+                              </button>
+                            </div>
                           </div>
                         </div>
                       </div>

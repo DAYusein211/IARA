@@ -40,20 +40,22 @@ public class FishingTripRepository : Repository<FishingTrip>, IFishingTripReposi
 
     public async Task<IEnumerable<FishingTrip>> GetActiveTripsAsync()
     {
+        var now = DateTime.UtcNow;
         return await _context.FishingTrips
             .Include(t => t.Ship)
             .Include(t => t.Catches)
-            .Where(t => t.EndTime == null)
+            .Where(t => t.EndTime == null || t.EndTime > now)
             .OrderByDescending(t => t.StartTime)
             .ToListAsync();
     }
 
     public async Task<IEnumerable<FishingTrip>> GetCompletedTripsAsync()
     {
+        var now = DateTime.UtcNow;
         return await _context.FishingTrips
             .Include(t => t.Ship)
             .Include(t => t.Catches)
-            .Where(t => t.EndTime != null)
+            .Where(t => t.EndTime != null && (t.EndTime <= now || t.EndTime == t.StartTime))
             .OrderByDescending(t => t.EndTime)
             .ToListAsync();
     }

@@ -1,18 +1,21 @@
 import { useState, useEffect } from 'react';
 import { Navbar } from '../../components/Navbar';
+import { Button } from '../../components/shared/Button';
 import { useAuth } from '../../context/AuthContext';
 import { ClipboardCheck, AlertCircle, DollarSign, TrendingUp } from 'lucide-react';
+import { Edit, Trash2 } from 'lucide-react';
 import { inspectionsAPI } from '../../api/services';
 import { Inspection } from '../../types';
 import { InspectionForm } from './components/InspectionForm';
 
 export const InspectorDashboard = () => {
-  const { user } = useAuth();
+  const { user, isAdmin } = useAuth();
   const [myInspections, setMyInspections] = useState<Inspection[]>([]);
   const [allInspections, setAllInspections] = useState<Inspection[]>([]);
   const [unpaidFines, setUnpaidFines] = useState<Inspection[]>([]);
   const [loading, setLoading] = useState(true);
   const [showInspectionForm, setShowInspectionForm] = useState(false);
+  const [editInspection, setEditInspection] = useState<Inspection | null>(null);
 
   useEffect(() => {
     loadDashboardData();
@@ -108,13 +111,13 @@ export const InspectorDashboard = () => {
               </div>
             </div>
 
-            {/* Recent Inspections + Create Inspection */}
+            {/* Recent Inspections + Create/Edit/Delete Inspection */}
             <div className="bg-white rounded-lg shadow">
               <div className="p-6 border-b border-gray-200 flex items-center justify-between">
                 <h2 className="text-xl font-semibold text-gray-900">Recent Inspections</h2>
                 <button
                   className="bg-blue-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-blue-700 transition"
-                  onClick={() => setShowInspectionForm(true)}
+                  onClick={() => { setShowInspectionForm(true); setEditInspection(null); }}
                 >
                   + New Inspection
                 </button>
@@ -147,6 +150,31 @@ export const InspectorDashboard = () => {
                               </p>
                             )}
                           </div>
+                          <div className="flex items-center space-x-2">
+                            <Button
+                              variant="primary"
+                              size="sm"
+                              className="mr-1 flex items-center"
+                              onClick={() => { setEditInspection(inspection); setShowInspectionForm(true); }}
+                            >
+                              <Edit className="h-4 w-4 mr-1 inline" /> Edit
+                            </Button>
+                            {isAdmin && (
+                              <Button
+                                variant="danger"
+                                size="sm"
+                                className="flex items-center"
+                                onClick={async () => {
+                                  if (window.confirm('Are you sure you want to delete this inspection?')) {
+                                    await inspectionsAPI.delete(inspection.id);
+                                    loadDashboardData();
+                                  }
+                                }}
+                              >
+                                <Trash2 className="h-4 w-4 mr-1 inline" /> Delete
+                              </Button>
+                            )}
+                          </div>
                         </div>
                       </div>
                     ))}
@@ -158,6 +186,7 @@ export const InspectorDashboard = () => {
               isOpen={showInspectionForm}
               onClose={() => setShowInspectionForm(false)}
               onSuccess={loadDashboardData}
+              editInspection={editInspection}
             />
 
             {/* Unpaid Fines Section */}

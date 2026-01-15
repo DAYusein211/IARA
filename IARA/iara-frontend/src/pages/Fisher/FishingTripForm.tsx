@@ -43,30 +43,27 @@ export const FishingTripForm = ({ isOpen, onClose, onSuccess, ships, initialTrip
   const [shipId, setShipId] = useState<number>(initialTrip?.shipId || ships[0]?.id || 0);
   const [endTime, setEndTime] = useState<string>(initialTrip?.endTime ? initialTrip.endTime.slice(0, 16) : '');
   const [fuelUsed, setFuelUsed] = useState<number | ''>(initialTrip?.fuelUsed ?? '');
-  // ...existing code...
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     try {
-      // Convert local datetime string to UTC ISO string
       const toUtcIso = (dt: string) => dt ? new Date(dt).toISOString() : null;
       if (isEdit && initialTrip) {
         await fishingTripsAPI.update(initialTrip.id, {
           shipId,
-          // Do NOT send startTime on edit to prevent backend update
           endTime: toUtcIso(endTime) || null,
           fuelUsed: fuelUsed === '' ? null : Number(fuelUsed),
           catches,
         });
       } else {
-        await fishingTripsAPI.create({
-          shipId,
-          startTime: toUtcIso(startTime),
-          endTime: toUtcIso(endTime) || null,
-          fuelUsed: fuelUsed === '' ? null : Number(fuelUsed),
-          catches,
-        });
+          await fishingTripsAPI.create({
+            shipId,
+            startTime: toUtcIso(startTime) ?? "", 
+            endTime: toUtcIso(endTime) || null,
+            fuelUsed: fuelUsed === '' ? null : Number(fuelUsed),
+            catches,
+          });
       }
       onSuccess();
       onClose();

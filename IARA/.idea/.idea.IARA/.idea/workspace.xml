@@ -10,18 +10,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="44ac98a2-630b-4d39-8ad6-14761b775bfc" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.IARA/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.IARA/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/IARA.API/Controllers/FishingTripsController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/IARA.API/Controllers/FishingTripsController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/IARA.API/Controllers/PermitsController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/IARA.API/Controllers/PermitsController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/IARA.API/Controllers/TicketsController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/IARA.API/Controllers/TicketsController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/IARA.Application/Services/FishingTripService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/IARA.Application/Services/FishingTripService.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/IARA.Infrastructure/Repositories/FishingTripRepository.cs" beforeDir="false" afterPath="$PROJECT_DIR$/IARA.Infrastructure/Repositories/FishingTripRepository.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/iara-frontend/src/api/services.ts" beforeDir="false" afterPath="$PROJECT_DIR$/iara-frontend/src/api/services.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/iara-frontend/src/pages/Admin/components/ShipsManager.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/iara-frontend/src/pages/Admin/components/ShipsManager.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/iara-frontend/src/pages/Fisher/FisherDashboard.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/iara-frontend/src/pages/Fisher/FisherDashboard.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/iara-frontend/src/pages/Fisher/FishingTripForm.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/iara-frontend/src/pages/Fisher/FishingTripForm.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/iara-frontend/src/pages/Inspector/InspectorDashboard.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/iara-frontend/src/pages/Inspector/InspectorDashboard.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/iara-frontend/src/pages/Inspector/components/InspectionForm.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/iara-frontend/src/pages/Inspector/components/InspectionForm.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -133,6 +122,7 @@
       <workItem from="1768462566339" duration="132000" />
       <workItem from="1768473812138" duration="534000" />
       <workItem from="1768502332626" duration="6580000" />
+      <workItem from="1768509309696" duration="342000" />
     </task>
     <servers />
   </component>
